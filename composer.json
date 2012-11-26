@@ -1,0 +1,13 @@
+{
+	"repositories": [{
+        "type": "vcs",
+        "url": "https://github.com/fzaninotto/Faker"
+    }],
+	
+    "require": {
+        "fzaninotto/faker": "1.1.*", 
+        "slim/slim": "2.*", 
+        "slim/extras": "2.*", 
+        "twig/twig": "1.*"
+    }
+}

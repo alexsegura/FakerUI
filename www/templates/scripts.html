@@ -1,0 +1,138 @@
+<script>
+        		
+$(document).ready(function() {
+
+	var $list = $('#config > ul');
+
+	var storeFields = function() {
+		console.log('Saving in LocalStorage..');
+		var fields = [];
+    	$list.find('select').each(function() {
+			var val = $(this).val();
+			fields.push(val);
+		});
+		localStorage.setItem("fakerui.config.fields", JSON.stringify(fields));
+	};
+
+	var getFieldsArray = function() {
+		var fields = [];
+    	$list.find('select').each(function() {
+			var val = $(this).val();
+			fields.push(val);
+		});
+		return fields;
+	}
+
+	$('#config > ul li .remove').live('click', function(e) {
+		e.preventDefault();
+		$(this).parents('li').first().remove();
+		storeFields();
+		return false;
+	});
+
+	$('#config > ul li select').live('change', function(e) {
+		storeFields();
+	});
+		
+	if (Modernizr.localstorage) {
+
+		var data = localStorage.getItem("fakerui.config.fields");
+
+		if (data) {
+     				
+			var fields = JSON.parse(data), 
+				$item = $list.find('li:first');
+ 					
+			_.each(fields, function(field) {
+
+				var $clone = $item.clone();
+
+				$clone.find('select option[value="' + field + '"]')
+ 						.attr('selected', 'selected');
+
+ 					$list.append($clone);
+ 						
+ 				});
+
+			$item.remove();
+ 					
+ 		}
+
+	}
+
+	$('#add-field').on('click', function(e) {
+
+		e.preventDefault();
+
+		var $item = $list.find('li:first'),
+			$clone = $item.clone();
+			
+		$list.find('select').each(function() {
+			var val = $(this).val();
+			fields.push(val);
+		});
+
+		$list.append($clone);
+
+		storeFields();
+			
+		return false;
+			
+	});
+		
+	$('#preview-tab').on('shown', function (e) {
+
+		var $target = $(e.target);
+			href = $target.attr('href'), 
+			$tabPane = $(href), 
+			$table = $tabPane.find('table'), 
+			fields = getFieldsArray(); 
+
+		var data = {
+			fields: []
+		};
+		_.each(fields, function(field) {
+			data.fields.push(field);
+		});
+		
+		$.ajax({
+			type		: "GET",
+			url			: '/fakerui/index.php/preview',
+			data		: data, 
+			dataType 	: 'json', 
+			success 	: function(rows) {
+
+				$table.fadeOut('fast', function() {
+
+					$table.empty();
+					
+					_.each(rows, function(row) {
+						var $row = $('<tr>');
+						_.each(row, function(value) {
+							var $cell = $('<td>');
+							$cell.html(value);
+							$row.append($cell);
+						});
+						$table.append($row);
+					}); 
+					
+					$table.fadeIn('fast');
+												
+				});
+
+			}
+		});
+			
+		/*
+		$clone.removeAttr('id');
+		$tabPane.empty().append($clone);
+			
+		$clone.fadeOut('fast', function() {
+				$clone.fadeIn('slow');							
+		});
+		*/
+			
+	});
+		
+});
+</script>
