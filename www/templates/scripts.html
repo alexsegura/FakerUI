@@ -1,5 +1,7 @@
 <script>
-        		
+
+var APP_PATH = "{{ app_path }}"; 
+
 $(document).ready(function() {
 
 	var $list = $('#config form ul');
@@ -115,7 +117,7 @@ $(document).ready(function() {
 		
 		$.ajax({
 			type: 'POST', 
-			url: '/fakerui/index.php/data.' + format, 
+			url: APP_PATH + '/data.' + format, 
 			data: JSON.stringify(getConfigObject()),
 			contentType: "application/json", 
 			dataType: 'text',
