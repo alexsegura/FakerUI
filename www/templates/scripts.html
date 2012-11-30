@@ -5,7 +5,6 @@ $(document).ready(function() {
 	var $list = $('#config form ul');
 
 	var storeFields = function() {
-		console.log('Saving in LocalStorage..');
 		var fields = [];
     	$list.find('select').each(function() {
 			var val = $(this).val();
@@ -21,7 +20,28 @@ $(document).ready(function() {
 			fields.push(val);
 		});
 		return fields;
-	}
+	};
+
+	var getConfigObject = function() {
+		var obj = [];
+		_.each(getFieldsArray(), function(field) {
+			obj.push({
+				type: field
+			});
+		});
+		return obj;
+	};
+
+	var updateIndex = function(index, element) {
+		var $element = $(element), 
+			name = $element.attr('name');
+		$element.attr('name', name.replace('[0]', '[' + index + ']'));
+	};
+
+	var makeForm = function() {
+		$list.find('select').each(updateIndex);
+		$list.find('input').each(updateIndex);
+	};
 
 	$('#config form ul li .remove').live('click', function(e) {
 		e.preventDefault();
@@ -46,17 +66,14 @@ $(document).ready(function() {
 			if (fields.length > 0) {
 							
 				_.each(fields, function(field) {
-	
 					var $clone = $item.clone();
-	
 					$clone.find('select option[value="' + field + '"]')
 	 						.attr('selected', 'selected');
-	
 	 				$list.append($clone);
-	 						
 	 			});
 	
 				$item.remove();
+				makeForm();
 				
 			}
  					
@@ -64,19 +81,27 @@ $(document).ready(function() {
 
 	}
 
+	$('#format').on('change', function() {
+		var val = $(this).val();
+		$('#config form input[name="format"]').val(val);
+	});
+
 	$('#add-field').on('click', function(e) {
 
 		e.preventDefault();
 
-		var $item = $list.find('li:first'),
-			$clone = $item.clone();
-			
+		var $items = $list.find('li'),
+			$item = $items.first(),
+			$clone = $item.clone(),
+			itemCount = $items.length;
+
 		$list.find('select').each(function() {
 			var val = $(this).val();
 			fields.push(val);
 		});
 
 		$list.append($clone);
+		makeForm();
 
 		storeFields();
 			
@@ -86,53 +111,23 @@ $(document).ready(function() {
 		
 	$('#preview-tab').on('shown', function (e) {
 
-		var $target = $(e.target);
-			href = $target.attr('href'), 
-			$tabPane = $(href), 
-			$table = $tabPane.find('table'), 
-			fields = getFieldsArray(); 
-
-		var data = {
-			fields: []
-		};
-		_.each(fields, function(field) {
-			data.fields.push(field);
-		});
+		var format = $('#format').val();
 		
 		$.ajax({
-			type		: "GET",
-			url			: '/fakerui/index.php/preview',
-			data		: data, 
-			dataType 	: 'json', 
-			success 	: function(rows) {
-
-				$table.fadeOut('fast', function() {
-
-					$table.empty();
-					
-					_.each(rows, function(row) {
-						var $row = $('<tr>');
-						_.each(row, function(value) {
-							var $cell = $('<td>');
-							$cell.html(value);
-							$row.append($cell);
-						});
-						$table.append($row);
-					}); 
-					
-					$table.fadeIn('fast');
-												
-				});
-
+			type: 'POST', 
+			url: '/fakerui/index.php/data.' + format, 
+			data: JSON.stringify(getConfigObject()),
+			contentType: "application/json", 
+			dataType: 'text',
+			success: function(text) {
+				$('#preview pre').html(text);
 			}
 		});
-			
+
 	});
 
 	$('#download').on('click', function() {
-
 		$('#fields-form').submit();
-		
 	});
 		
 });

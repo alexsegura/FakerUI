@@ -33,61 +33,94 @@
 		</div>
     	
         <div class="container-fluid">
-			<div class="span2">
-				<label>File type:</label>
-				<select class="input-medium">
-					<option>CSV</option>
-					<option>JSON</option>
-					<option>XML</option>
-				</select>
-				<button class="btn btn-large btn-block btn-success" id="download">Generate</button>
-				<hr />
-				<ul class="nav nav-pills nav-stacked">
-					<li><a href="#">Home</a></li>
-					<li><a href="#">About</a></li>
-				</ul>
-			</div> 
-			<div class="span10">
-				
-				<div class="alert">
-					Faker UI is a fake data generator built on Faker. 
+        	<div class="row-fluid">
+        		<div class="span8">
+        			<div class="alert alert-info">
+						Faker UI is a data generator built on top of the awesome <strong>Faker</strong> from @fzaninotto 
+					</div>
+					<p>
+					Easily generate fake data in various formats, for demo or testing.  
+					</p>
+					<p>
+					Faker UI is also available as <strong>REST</strong>. Just send a JSON object representing 
+					the data you want to generate and save the output to a file. 
+					</p>
+					<pre>$ curl -d '[{"type":"firstName"},{"type":"lastName"}]' 'http://fakerui.com/data.sql?size=5'
+INSERT INTO %table% VALUES("Paul", "Noel");
+INSERT INTO %table% VALUES("Nicole", "Monnier");
+INSERT INTO %table% VALUES("Patricia", "Vaillant");
+INSERT INTO %table% VALUES("Adele", "Martins");
+INSERT INTO %table% VALUES("Constance", "Mahe");</pre>
+        		</div>
+        		<div class="span4">
+        			<form class="form-horizontal">
+	        			<div class="control-group">
+	    					<label class="control-label" for="format">Format</label>
+	    					<div class="controls">
+	      						<select id="format" class="input-medium">
+									<option value="csv">CSV</option>
+									<option value="sql">SQL</option>
+								</select>
+	    					</div>
+	 					</div>
+	 					<div class="control-group">
+	 						<div class="controls">
+	 							<label class="checkbox">
+        							<input type="checkbox"> Titles
+      							</label>
+	 						</div>
+	 					</div>
+	 					
+        			</form>
+					<hr>
+					<button class="btn btn-large btn-block btn-success" id="download">Generate</button>
 				</div>
-				
-				<div class="tabbable">
-  					<ul class="nav nav-tabs">
-    					<li class="active"><a href="#config" data-toggle="tab">Configuration</a></li>
-    					<li><a id="preview-tab" href="#preview" data-toggle="tab">Preview</a></li>
-  					</ul>
-  					<div class="tab-content">
-    					<div class="tab-pane active" id="config">
-    						<form method="post" action="/fakerui/index.php/download" id="fields-form">
-    							<input type="hidden" name="fileType" value="csv" />
-	    						<ul class="unstyled fields">
-	      							<li>
-	      								<a href="#" class="remove"><i class="icon icon-remove"></i></a>
-		      							<select name="fields[]">
-		      								{% for provider, values in fieldTypes %}
-		      									<option>{{provider }}</option>
-		      									{% for fieldType in values %}
-												<option value="{{ fieldType }}">- {{ fieldType }}</option>
+	        </div>
+	        <hr>
+        	<div class="row-fluid">
+        		<div class="span12">
+					<div class="tabbable">
+	  					<ul class="nav nav-tabs">
+	    					<li class="active"><a href="#config" data-toggle="tab">Configuration</a></li>
+	    					<li><a id="preview-tab" href="#preview" data-toggle="tab">Preview</a></li>
+	  					</ul>
+	  					<div class="tab-content">
+	    					<div class="tab-pane active" id="config">
+	    						<form method="post" action="/fakerui/index.php/download" id="fields-form">
+	    							<input type="hidden" name="format" value="csv" />
+		    						<ul class="unstyled fields">
+		      							<li>
+		      								<a href="#" class="remove"><i class="icon icon-remove"></i></a>
+			      							<select name="fields[0][type]">
+			      								{% for provider, values in fieldTypes %}
+			      									<option>{{provider }}</option>
+			      									{% for fieldType in values %}
+													<option value="{{ fieldType }}">- {{ fieldType }}</option>
+													{% endfor %}
 												{% endfor %}
-											{% endfor %}
-										</select>
-									</li>
-	      						</ul>
-      						</form>
-      						<a href="#" id="add-field"><i class="icon icon-plus"></i> Ajouter</a> 
-    					</div>
-    					<div class="tab-pane" id="preview">
-							<table class="table">
-							</table>
-    					</div>
-  					</div>
+											</select>
+											<input name="fields[0][title]" class="input-medium" type="text" placeholder="Title" />
+										</li>
+		      						</ul>
+	      						</form>
+	      						<a href="#" id="add-field"><i class="icon icon-plus"></i> Add field</a> 
+	    					</div>
+	    					<div class="tab-pane" id="preview">
+								<table class="table">
+								</table>
+								<pre></pre>
+	    					</div>
+	  					</div>
+					</div>
 				</div>
-			</div>      	
+        	</div>
+        	<hr>
+        	<footer>
+        	<a href="#">View project on GitHub</a>
+        	</footer>
+			
+			      	
         </div>
-        
 		{% include 'scripts.html' %}
-        
     </body>
 </html>

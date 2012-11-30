@@ -31,6 +31,44 @@ $app = new \Slim\Slim(array(
     'view' => $twigView
 ));
 
+function writeCSV($fields, $response, $faker, $size = 20) {
+	
+	// We write the file in a stream
+    $stream = fopen('php://temp/maxmemory:'. (12*1024*1024), 'r+');
+	for ($i = 0; $i < $size; $i++) {
+    	$row = array();
+    	foreach ($fields as $field) {
+    		$row[] = $faker->{$field->type};
+    	}
+        fputcsv($stream, $row, ';', '"');
+    }
+    rewind($stream);
+    $output = stream_get_contents($stream);
+   	fclose($stream);
+   	
+   	$response->write($output);
+	
+}
+
+function writeSQL($fields, $response, $faker, $size = 20) {
+	
+	// We write the file in a stream
+    $stream = fopen('php://temp/maxmemory:'. (12*1024*1024), 'r+');
+	for ($i = 0; $i < $size; $i++) {
+    	$row = array();
+    	foreach ($fields as $field) {
+    		$row[] = $faker->{$field->type};
+    	}
+        fwrite($stream, 'INSERT INTO %table% VALUES("' .implode('", "', $row). '");' . "\n");
+    }
+    rewind($stream);
+    $output = stream_get_contents($stream);
+   	fclose($stream);
+   	
+   	$response->write($output);
+	
+}
+
 $app->get('/', function() use($app, $faker, $fieldTypes) {
 	
     $vars = array(
@@ -42,57 +80,56 @@ $app->get('/', function() use($app, $faker, $fieldTypes) {
 	
 });
 
-$app->get('/preview', function() use($app, $faker) {
-	
-    $request = $app->request();
-    
-    $fields = $request->get('fields');
-    
-    $response = array();
-    
-    for ($i = 0; $i < 20; $i++) {
-    	$row = array();
-    	foreach ($fields as $field) {
-    		$row[] = $faker->{$field};
-    	}
-    	$response[] = $row;
-    }
-    
-    echo json_encode($response);
-	
-});
-
 $app->post('/download', function() use($app, $faker) {
 	
-    $request = $app->request();
+    $request 	= $app->request();
+    $response 	= $app->response();
     
-    $fields = $request->params('fields');
+    $fields = $request->post('fields');
+    $format = $request->params('format');
     
-    $response = $app->response();
+    $config = array();
+    foreach ($fields as $field) {
+    	$config[] = new ArrayObject($field, ArrayObject :: ARRAY_AS_PROPS);
+    }
     
     $response['Content-Description'] 		= 'File Transfer';
     $response['Content-Type'] 				= 'application/octet-stream';
-    $response['Content-Disposition'] 		= 'attachment; filename=foo.csv';
+    $response['Content-Disposition'] 		= 'attachment; filename=data.' . $format;
     $response['Content-Transfer-Encoding'] 	= 'binary';
     $response['Expires'] 					= '0';
     $response['Cache-Control'] 				= 'must-revalidate, post-check=0, pre-check=0';
     $response['Pragma'] 					= 'public';
-    // $response['Content-Length'] = filesize($file);
     
-    // We write the file in a stream
-    $stream = fopen('php://temp/maxmemory:'. (12*1024*1024), 'r+');
-	for ($i = 0; $i < 20; $i++) {
-    	$row = array();
-    	foreach ($fields as $field) {
-    		$row[] = $faker->{$field};
-    	}
-        fputcsv($stream, $row, ';', '"');
-    }
-    rewind($stream);
-    $output = stream_get_contents($stream);
-   	fclose($stream);
-   	
-   	$response->write($output);
+	switch ($format) {
+		case 'sql':
+			writeSQL($config, $response, $faker);
+			break;
+		default:
+		case 'csv':
+			writeCSV($config, $response, $faker);
+			break;
+	}
+    
+});
+
+$app->post('/data.:format', function($format) use($app, $faker) {
+	
+	$request 	= $app->request();
+	$response	= $app->response();
+	
+	$size 	= $request->get('size') ? $request->get('size') : 20;
+	$config = json_decode($request->getBody());
+	
+	switch ($format) {
+		case 'sql':
+			writeSQL($config, $response, $faker, $size);
+			break;
+		default:
+		case 'csv':
+			writeCSV($config, $response, $faker, $size);
+			break;
+	}
 	
 });
 
