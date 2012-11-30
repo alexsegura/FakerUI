@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-	    <link rel="stylesheet" href="/fakerui/css/bootstrap.min.css" />
+	    <link rel="stylesheet" href="{{ app_path }}/css/bootstrap.min.css" />
 	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-	    <script src="/fakerui/js/bootstrap.min.js"></script>
-	    <script src="/fakerui/js/modernizr.min.js"></script>
-	    <script src="/fakerui/js/underscore.min.js"></script>
-	    <script src="/fakerui/js/backbone.min.js"></script>
+	    <script src="{{ app_path }}/js/bootstrap.min.js"></script>
+	    <script src="{{ app_path }}/js/modernizr.min.js"></script>
+	    <script src="{{ app_path }}/js/underscore.min.js"></script>
+	    <script src="{{ app_path }}/js/backbone.min.js"></script>
 	    <title>Faker UI</title>
 	    <style>
 	    	.fields li {
@@ -86,7 +86,7 @@ INSERT INTO %table% VALUES("Constance", "Mahe");</pre>
 	  					</ul>
 	  					<div class="tab-content">
 	    					<div class="tab-pane active" id="config">
-	    						<form method="post" action="/fakerui/index.php/download" id="fields-form">
+	    						<form method="post" action="{{ app_path }}/index.php/download" id="fields-form">
 	    							<input type="hidden" name="format" value="csv" />
 		    						<ul class="unstyled fields">
 		      							<li>
