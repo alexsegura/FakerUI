@@ -2,7 +2,7 @@
         		
 $(document).ready(function() {
 
-	var $list = $('#config > ul');
+	var $list = $('#config form ul');
 
 	var storeFields = function() {
 		console.log('Saving in LocalStorage..');
@@ -23,14 +23,14 @@ $(document).ready(function() {
 		return fields;
 	}
 
-	$('#config > ul li .remove').live('click', function(e) {
+	$('#config form ul li .remove').live('click', function(e) {
 		e.preventDefault();
 		$(this).parents('li').first().remove();
 		storeFields();
 		return false;
 	});
 
-	$('#config > ul li select').live('change', function(e) {
+	$('#config form ul li select').live('change', function(e) {
 		storeFields();
 	});
 		
@@ -39,22 +39,26 @@ $(document).ready(function() {
 		var data = localStorage.getItem("fakerui.config.fields");
 
 		if (data) {
-     				
+     		
 			var fields = JSON.parse(data), 
 				$item = $list.find('li:first');
- 					
-			_.each(fields, function(field) {
 
-				var $clone = $item.clone();
-
-				$clone.find('select option[value="' + field + '"]')
- 						.attr('selected', 'selected');
-
- 					$list.append($clone);
- 						
- 				});
-
-			$item.remove();
+			if (fields.length > 0) {
+							
+				_.each(fields, function(field) {
+	
+					var $clone = $item.clone();
+	
+					$clone.find('select option[value="' + field + '"]')
+	 						.attr('selected', 'selected');
+	
+	 				$list.append($clone);
+	 						
+	 			});
+	
+				$item.remove();
+				
+			}
  					
  		}
 
@@ -123,15 +127,12 @@ $(document).ready(function() {
 			}
 		});
 			
-		/*
-		$clone.removeAttr('id');
-		$tabPane.empty().append($clone);
-			
-		$clone.fadeOut('fast', function() {
-				$clone.fadeIn('slow');							
-		});
-		*/
-			
+	});
+
+	$('#download').on('click', function() {
+
+		$('#fields-form').submit();
+		
 	});
 		
 });

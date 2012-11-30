@@ -40,7 +40,7 @@
 					<option>JSON</option>
 					<option>XML</option>
 				</select>
-				<button class="btn btn-large btn-block btn-success">Generate</button>
+				<button class="btn btn-large btn-block btn-success" id="download">Generate</button>
 				<hr />
 				<ul class="nav nav-pills nav-stacked">
 					<li><a href="#">Home</a></li>
@@ -60,19 +60,22 @@
   					</ul>
   					<div class="tab-content">
     					<div class="tab-pane active" id="config">
-    						<ul class="unstyled fields">
-      							<li>
-      								<a href="#" class="remove"><i class="icon icon-remove"></i></a>
-	      							<select name="fields[]">
-	      								{% for provider, values in fieldTypes %}
-	      									<option>{{provider }}</option>
-	      									{% for fieldType in values %}
-											<option value="{{ fieldType }}">- {{ fieldType }}</option>
+    						<form method="post" action="/fakerui/index.php/download" id="fields-form">
+    							<input type="hidden" name="fileType" value="csv" />
+	    						<ul class="unstyled fields">
+	      							<li>
+	      								<a href="#" class="remove"><i class="icon icon-remove"></i></a>
+		      							<select name="fields[]">
+		      								{% for provider, values in fieldTypes %}
+		      									<option>{{provider }}</option>
+		      									{% for fieldType in values %}
+												<option value="{{ fieldType }}">- {{ fieldType }}</option>
+												{% endfor %}
 											{% endfor %}
-										{% endfor %}
-									</select>
-								</li>
-      						</ul>
+										</select>
+									</li>
+	      						</ul>
+      						</form>
       						<a href="#" id="add-field"><i class="icon icon-plus"></i> Ajouter</a> 
     					</div>
     					<div class="tab-pane" id="preview">
