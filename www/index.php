@@ -23,6 +23,9 @@ foreach ($faker->getProviders() as $provider) {
 	}
 }
 
+define('APP_ENV', getenv('ENV') ? getenv('ENV') : 'dev');
+define('APP_PATH', APP_ENV == 'dev' ? '/fakerui' : '');
+
 $lines = 5;
 
 $twigView = new \Slim\Extras\Views\Twig();
@@ -73,7 +76,8 @@ $app->get('/', function() use($app, $faker, $fieldTypes) {
 	
     $vars = array(
 		'faker' 		=> $faker, 
-    	'fieldTypes'	=> $fieldTypes
+    	'fieldTypes'	=> $fieldTypes, 
+    	'app_path'		=> APP_PATH
 	);
 	
 	$app->render('layout.html', $vars);
