@@ -95,7 +95,7 @@ foreach ($faker->getProviders() as $provider) {
 
 $app->get('/', function() use($app, $faker, $fieldTypes) {
 	
-	$available = array('fr_FR', 'en_US', 'de_DE', 'it_IT');
+	$available = array('en_US', 'fr_FR', 'de_DE', 'it_IT', 'ru_RU', 'es_AR');
 	$locales = array();
 	foreach ($available as $locale) {
 		$locales[$locale] = Locale::getDisplayLanguage($locale, 'en');
