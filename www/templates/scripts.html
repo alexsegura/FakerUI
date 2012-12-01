@@ -133,6 +133,14 @@ $(document).ready(function() {
 		return false;
 	});
 
+	$('#locales li a').on('click', function(e) {
+		var $this = $(this),  
+			locale = $this.attr('href').substring(1);
+		$('#locale').html($this.text());
+		Cookies.set('fakerui.locale', locale);
+		refreshPreview();
+	});
+
 	$('#download').on('click', function() {
 		$('#fields-form').find('input[name="size"]').val($('#size').val());
 		$('#fields-form').submit();

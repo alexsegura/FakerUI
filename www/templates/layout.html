@@ -7,6 +7,7 @@
 	    <script src="{{ app_path }}/js/modernizr.min.js"></script>
 	    <script src="{{ app_path }}/js/underscore.min.js"></script>
 	    <script src="{{ app_path }}/js/backbone.min.js"></script>
+	    <script src="{{ app_path }}/js/cookies.min.js"></script>
 	    <title>Faker UI</title>
 	    <style>
 	    	.fields li {
@@ -19,7 +20,6 @@
 	    </style>
     </head>
     <body>
-    	
     	<div class="navbar">
   			<div class="navbar-inner">
     			<div class="container">
@@ -29,12 +29,24 @@
 			        	<span class="icon-bar"></span>
 			     	</a>
 	      			<a class="brand" href="#">Faker UI</a>
-	      			<div class="nav-collapse collapse">
+	      				<div class="nav-collapse collapse">
 	      			</div>
+	      			<ul class="nav pull-right">
+	      				<li><a><strong>Locale</strong></a></li>
+  						<li class="dropdown">
+    						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+      						<span id="locale">{{ displayLanguage }}</span> <b class="caret"></b>
+    						</a>
+    						<ul id="locales" class="dropdown-menu">
+    							{% for locale, displayLanguage in locales %}
+    							<li><a href="#{{ locale }}">{{ displayLanguage }}</a></li>
+    							{% endfor %}
+    						</ul>
+  						</li>
+					</ul>
     			</div>
   			</div>
 		</div>
-    	
         <div class="container-fluid">
         	<div class="row-fluid">
         		<div class="span8">
@@ -129,7 +141,7 @@ INSERT INTO %table% VALUES("Patricia", "Vaillant");
 INSERT INTO %table% VALUES("Adele", "Martins");
 INSERT INTO %table% VALUES("Constance", "Mahe");</pre>
 								<h4>Adding titles</h4>
-								<pre>curl -d '[{"type":"firstName","title":"Prenom"},{"type":"lastName","title":"Nom"}]' 'http://localhost/fakerui/index.php/data.csv?size=5&titles=1'
+								<pre>curl -d '[{"type":"firstName","title":"Prenom"},{"type":"lastName","title":"Nom"}]' 'http://fakerui.pagodabox.com/data.csv?size=5&titles=1'
 Prenom;Nom
 Bernadette;Cousin
 Michelle;Meunier
