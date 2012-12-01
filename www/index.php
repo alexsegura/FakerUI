@@ -34,11 +34,21 @@ $app = new \Slim\Slim(array(
     'view' => $twigView
 ));
 
-function writeCSV($fields, $response, $faker, $size = 20) {
+function writeCSV($fields, $response, $faker, $size = 15, $titles = false) {
 	
-	// We write the file in a stream
     $stream = fopen('php://temp/maxmemory:'. (12*1024*1024), 'r+');
+    $head = false;
 	for ($i = 0; $i < $size; $i++) {
+		
+		if ($titles && !$head) {
+			$row = array();
+    		foreach ($fields as $field) {
+    			$row[] = $field->title;
+    		}
+        	fputcsv($stream, $row, ';', '"');
+        	$head = true;
+		}
+		
     	$row = array();
     	foreach ($fields as $field) {
     		$row[] = $faker->{$field->type};
@@ -53,7 +63,7 @@ function writeCSV($fields, $response, $faker, $size = 20) {
 	
 }
 
-function writeSQL($fields, $response, $faker, $size = 20) {
+function writeSQL($fields, $response, $faker, $size = 15) {
 	
 	// We write the file in a stream
     $stream = fopen('php://temp/maxmemory:'. (12*1024*1024), 'r+');
@@ -123,15 +133,16 @@ $app->post('/data.:format', function($format) use($app, $faker) {
 	$response	= $app->response();
 	
 	$size 	= $request->get('size') ? $request->get('size') : 20;
+	$titles = $request->get('titles') ? $request->get('titles') : false;
 	$config = json_decode($request->getBody());
 	
 	switch ($format) {
 		case 'sql':
-			writeSQL($config, $response, $faker, $size);
+			writeSQL($config, $response, $faker, $size, $titles);
 			break;
 		default:
 		case 'csv':
-			writeCSV($config, $response, $faker, $size);
+			writeCSV($config, $response, $faker, $size, $titles);
 			break;
 	}
 	
