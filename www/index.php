@@ -4,35 +4,17 @@ require_once '../vendor/autoload.php';
 
 ini_set('display_errors', 'on');
 
-$faker = Faker\Factory::create('fr_FR');
-
-$fieldTypes = array();
-$blacklist = array('toUpper', 'toLower', 
-	'randomDigit', 'randomNumber', 'randomLetter', 'randomElement', 
-	'randomDigitNotNull', 'numberBetween', 
-	'numerify', 'lexify', 'bothify');
-foreach ($faker->getProviders() as $provider) {
-	$reflectionClass = new ReflectionClass($provider);
-	$publicMethods = $reflectionClass->getMethods(ReflectionMethod :: IS_PUBLIC);
-	$providerName = substr(get_class($provider), strrpos(get_class($provider),  '\\') + 1);
-	foreach ($publicMethods as $publicMethod) {
-		if (!$publicMethod->isConstructor() && !in_array($publicMethod->getName(), $blacklist)) {
-			// $params = $publicMethod->getParameters();
-			$fieldTypes[$providerName][] = $publicMethod->getName();
-		}
-	}
-}
-
 define('APP_ENV', getenv('ENV') ? getenv('ENV') : 'dev');
 define('APP_PATH', APP_ENV == 'dev' ? '/fakerui' : '');
 
-$lines = 5;
+///////////////////////////////////////////////////////////////////////////////////
 
-$twigView = new \Slim\Extras\Views\Twig();
-
-$app = new \Slim\Slim(array(
-    'view' => $twigView
-));
+function getLocale($app) {
+	$accept = Locale :: acceptFromHttp($app->request()->headers('Accept-Language'));
+	$cookie = $app->getCookie('fakerui.locale');
+	$locale = isset($cookie) ? $cookie : $accept;
+	return Locale :: getPrimaryLanguage($locale) . '_' . Locale :: getRegion($locale); 
+}
 
 function writeCSV($fields, $response, $faker, $size = 15, $titles = false) {
 	
@@ -82,12 +64,49 @@ function writeSQL($fields, $response, $faker, $size = 15) {
 	
 }
 
+///////////////////////////////////////////////////////////////////////////////////
+
+$app = new \Slim\Slim(array(
+    'view' => new \Slim\Extras\Views\Twig()
+));
+
+$locale = getLocale($app);
+
+$faker = Faker\Factory::create($locale);
+
+$fieldTypes = array();
+$blacklist = array('toUpper', 'toLower', 
+	'randomDigit', 'randomNumber', 'randomLetter', 'randomElement', 
+	'randomDigitNotNull', 'numberBetween', 
+	'numerify', 'lexify', 'bothify');
+foreach ($faker->getProviders() as $provider) {
+	$reflectionClass = new ReflectionClass($provider);
+	$publicMethods = $reflectionClass->getMethods(ReflectionMethod :: IS_PUBLIC);
+	$providerName = substr(get_class($provider), strrpos(get_class($provider),  '\\') + 1);
+	foreach ($publicMethods as $publicMethod) {
+		if (!$publicMethod->isConstructor() && !in_array($publicMethod->getName(), $blacklist)) {
+			// $params = $publicMethod->getParameters();
+			$fieldTypes[$providerName][] = $publicMethod->getName();
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+
 $app->get('/', function() use($app, $faker, $fieldTypes) {
 	
+	$available = array('fr_FR', 'en_US', 'de_DE', 'it_IT');
+	$locales = array();
+	foreach ($available as $locale) {
+		$locales[$locale] = Locale::getDisplayLanguage($locale, 'en');
+	}
+	
     $vars = array(
-		'faker' 		=> $faker, 
-    	'fieldTypes'	=> $fieldTypes, 
-    	'app_path'		=> APP_PATH
+		'faker' 			=> $faker, 
+    	'fieldTypes'		=> $fieldTypes, 
+    	'app_path'			=> APP_PATH, 
+    	'displayLanguage'	=> Locale::getDisplayLanguage(getLocale($app)), 
+    	'locales'			=> $locales
 	);
 	
 	$app->render('layout.html', $vars);
