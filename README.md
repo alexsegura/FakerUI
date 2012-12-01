@@ -1,6 +1,7 @@
 # Faker UI
 
-Faker UI is a data generator webapp built on top of the awesome Faker from @fzaninotto 
+Faker UI is a data generator webapp built on top of 
+the awesome [Faker](https://github.com/fzaninotto/Faker) from [@fzaninotto](https://github.com/fzaninotto) 
 
 [Website](http://fakerui.pagodabox.com/)
 
