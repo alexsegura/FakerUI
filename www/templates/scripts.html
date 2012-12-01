@@ -15,23 +15,18 @@ $(document).ready(function() {
 		localStorage.setItem("fakerui.config.fields", JSON.stringify(fields));
 	};
 
-	var getFieldsArray = function() {
-		var fields = [];
-    	$list.find('select').each(function() {
-			var val = $(this).val();
-			fields.push(val);
-		});
-		return fields;
-	};
-
 	var getConfigObject = function() {
-		var obj = [];
-		_.each(getFieldsArray(), function(field) {
-			obj.push({
-				type: field
+		var fields = [];
+		$list.find('li').each(function() {
+			var $this = $(this), 
+				$type = $this.find('select'),
+				$title = $this.find('input[type="text"]');
+			fields.push({
+				type: $type.val(),
+				title: $title.val()
 			});
 		});
-		return obj;
+		return fields;
 	};
 
 	var updateIndex = function(index, element) {
@@ -83,11 +78,6 @@ $(document).ready(function() {
 
 	}
 
-	$('#format').on('change', function() {
-		var val = $(this).val();
-		$('#config form input[name="format"]').val(val);
-	});
-
 	$('#add-field').on('click', function(e) {
 
 		e.preventDefault();
@@ -110,14 +100,15 @@ $(document).ready(function() {
 		return false;
 			
 	});
-		
-	$('#preview-tab').on('shown', function (e) {
 
-		var format = $('#format').val();
+	var refreshPreview = function() {
+
+		var format = $('#format').val(), 
+			titles = $('#config form input[name="titles"]').val();
 		
 		$.ajax({
 			type: 'POST', 
-			url: APP_PATH + '/data.' + format, 
+			url: APP_PATH + '/data.' + format + '?titles=' + titles, 
 			data: JSON.stringify(getConfigObject()),
 			contentType: "application/json", 
 			dataType: 'text',
@@ -126,6 +117,25 @@ $(document).ready(function() {
 			}
 		});
 
+	};
+
+	$('#format').on('change', function() {
+		var val = $(this).val();
+		$('#config form input[name="format"]').val(val);
+		refreshPreview();
+	});
+
+	$('#titles').on('click', function() {
+		$('#config form input[name="titles"]').val($(this).is(':checked') ? '1' : '0');
+		refreshPreview();
+	});
+		
+	$('#preview-tab').on('shown', refreshPreview);
+
+	$('#refresh').on('click', function(e) {
+		e.preventDefault();
+		refreshPreview();
+		return false;
 	});
 
 	$('#download').on('click', function() {

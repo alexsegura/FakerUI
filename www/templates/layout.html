@@ -46,16 +46,6 @@
 					<p>
 					Easily generate fake data in various formats, for demo or testing.  
 					</p>
-					<p>
-					Faker UI is also available as <strong>REST</strong>. Just send a JSON object representing 
-					the data you want to generate and save the output to a file. 
-					</p>
-					<pre>$ curl -d '[{"type":"firstName"},{"type":"lastName"}]' 'http://fakerui.pagodabox.com/data.sql?size=5'
-INSERT INTO %table% VALUES("Paul", "Noel");
-INSERT INTO %table% VALUES("Nicole", "Monnier");
-INSERT INTO %table% VALUES("Patricia", "Vaillant");
-INSERT INTO %table% VALUES("Adele", "Martins");
-INSERT INTO %table% VALUES("Constance", "Mahe");</pre>
         		</div>
         		<div class="span4">
         			<form class="form-horizontal">
@@ -71,7 +61,7 @@ INSERT INTO %table% VALUES("Constance", "Mahe");</pre>
 	 					<div class="control-group">
 	 						<div class="controls">
 	 							<label class="checkbox">
-        							<input type="checkbox"> Titles
+        							<input type="checkbox" id="titles" /> Titles
       							</label>
 	 						</div>
 	 					</div>
@@ -88,11 +78,13 @@ INSERT INTO %table% VALUES("Constance", "Mahe");</pre>
 	  					<ul class="nav nav-tabs">
 	    					<li class="active"><a href="#config" data-toggle="tab">Configuration</a></li>
 	    					<li><a id="preview-tab" href="#preview" data-toggle="tab">Preview</a></li>
+	    					<li><a id="rest-api-tab" href="#rest-api" data-toggle="tab">REST API</a></li>
 	  					</ul>
 	  					<div class="tab-content">
 	    					<div class="tab-pane active" id="config">
 	    						<form method="post" action="{{ app_path }}/index.php/download" id="fields-form">
 	    							<input type="hidden" name="format" value="csv" />
+	    							<input type="hidden" name="titles" value="0" />
 		    						<ul class="unstyled fields">
 		      							<li>
 		      								<a href="#" class="remove"><i class="icon icon-remove"></i></a>
@@ -111,9 +103,21 @@ INSERT INTO %table% VALUES("Constance", "Mahe");</pre>
 	      						<a href="#" id="add-field"><i class="icon icon-plus"></i> Add field</a> 
 	    					</div>
 	    					<div class="tab-pane" id="preview">
-								<table class="table">
-								</table>
+								<a id="refresh" class="btn btn-info" href="#"><i class="icon-repeat icon-white"></i> Refresh</a>
+								<hr>
 								<pre></pre>
+	    					</div>
+	    					<div class="tab-pane" id="rest-api">
+								<p>
+								Faker UI is also available as <strong>REST</strong>. Just send a JSON object representing 
+								the data you want to generate and save the output to a file. 
+								</p>
+								<pre>$ curl -d '[{"type":"firstName"},{"type":"lastName"}]' 'http://fakerui.pagodabox.com/data.sql?size=5'
+INSERT INTO %table% VALUES("Paul", "Noel");
+INSERT INTO %table% VALUES("Nicole", "Monnier");
+INSERT INTO %table% VALUES("Patricia", "Vaillant");
+INSERT INTO %table% VALUES("Adele", "Martins");
+INSERT INTO %table% VALUES("Constance", "Mahe");</pre>
 	    					</div>
 	  					</div>
 					</div>
