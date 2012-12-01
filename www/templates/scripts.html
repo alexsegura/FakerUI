@@ -7,12 +7,7 @@ $(document).ready(function() {
 	var $list = $('#config form ul');
 
 	var storeFields = function() {
-		var fields = [];
-    	$list.find('select').each(function() {
-			var val = $(this).val();
-			fields.push(val);
-		});
-		localStorage.setItem("fakerui.config.fields", JSON.stringify(fields));
+		localStorage.setItem("fakerui.config.fields", JSON.stringify(getConfigObject()));
 	};
 
 	var getConfigObject = function() {
@@ -64,8 +59,8 @@ $(document).ready(function() {
 							
 				_.each(fields, function(field) {
 					var $clone = $item.clone();
-					$clone.find('select option[value="' + field + '"]')
-	 						.attr('selected', 'selected');
+					$clone.find('select option[value="' + field.type + '"]').attr('selected', 'selected');
+					$clone.find('input[type="text"]').val(field.title);
 	 				$list.append($clone);
 	 			});
 	
@@ -139,6 +134,7 @@ $(document).ready(function() {
 	});
 
 	$('#download').on('click', function() {
+		$('#fields-form').find('input[name="size"]').val($('#size').val());
 		$('#fields-form').submit();
 	});
 		

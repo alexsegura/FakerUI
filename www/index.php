@@ -100,7 +100,9 @@ $app->post('/download', function() use($app, $faker) {
     $response 	= $app->response();
     
     $fields = $request->post('fields');
-    $format = $request->params('format');
+    $format = $request->post('format');
+    $size 	= $request->post('size') ? $request->post('size') : 20;
+	$titles = $request->post('titles') ? $request->post('titles') : false;
     
     $config = array();
     foreach ($fields as $field) {
@@ -117,11 +119,11 @@ $app->post('/download', function() use($app, $faker) {
     
 	switch ($format) {
 		case 'sql':
-			writeSQL($config, $response, $faker);
+			writeSQL($config, $response, $faker, $size, $titles);
 			break;
 		default:
 		case 'csv':
-			writeCSV($config, $response, $faker);
+			writeCSV($config, $response, $faker, $size, $titles);
 			break;
 	}
     
