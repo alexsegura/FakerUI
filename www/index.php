@@ -7,6 +7,8 @@ ini_set('display_errors', 'on');
 define('APP_ENV', getenv('ENV') ? getenv('ENV') : 'dev');
 define('APP_PATH', APP_ENV == 'dev' ? '/fakerui' : '');
 
+
+
 ///////////////////////////////////////////////////////////////////////////////////
 
 function getLocale($app) {
@@ -72,22 +74,18 @@ $app = new \Slim\Slim(array(
 
 $locale = getLocale($app);
 
-$faker = Faker\Factory::create($locale);
+$faker = Faker\Factory :: create($locale);
 
+$documentor = new Faker\Documentor($faker);
 $fieldTypes = array();
-$blacklist = array('toUpper', 'toLower', 
-	'randomDigit', 'randomNumber', 'randomLetter', 'randomElement', 
-	'randomDigitNotNull', 'numberBetween', 
-	'numerify', 'lexify', 'bothify');
-foreach ($faker->getProviders() as $provider) {
-	$reflectionClass = new ReflectionClass($provider);
-	$publicMethods = $reflectionClass->getMethods(ReflectionMethod :: IS_PUBLIC);
-	$providerName = substr(get_class($provider), strrpos(get_class($provider),  '\\') + 1);
-	foreach ($publicMethods as $publicMethod) {
-		if (!$publicMethod->isConstructor() && !in_array($publicMethod->getName(), $blacklist)) {
-			// $params = $publicMethod->getParameters();
-			$fieldTypes[$providerName][] = $publicMethod->getName();
+
+foreach ($documentor->getFormatters() as $class => $methods) {
+	$providerName = substr($class, strrpos($class, '\\') + 1);
+	foreach ($methods as $method => $example) {
+		if (false !== strpos($method, '(')) {
+			$method = substr($method, 0, strpos($method, '('));
 		}
+		$fieldTypes[$providerName][] = $method;
 	}
 }
 

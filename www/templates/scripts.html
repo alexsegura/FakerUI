@@ -125,12 +125,7 @@ $(document).ready(function() {
 		refreshPreview();
 	});
 		
-	$('#preview-tab').on('shown', function() {
-		if ($('#preview pre').hasClass('empty')) {
-			refreshPreview();
-			$('#preview pre').removeAttr('class');
-		}
-	});
+	$('#preview-tab').on('shown', refreshPreview);
 
 	$('#refresh').on('click', function(e) {
 		e.preventDefault();
