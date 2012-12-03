@@ -2,12 +2,10 @@
 
 require_once '../vendor/autoload.php';
 
-ini_set('display_errors', 'on');
-
 define('APP_ENV', getenv('ENV') ? getenv('ENV') : 'dev');
 define('APP_PATH', APP_ENV == 'dev' ? '/fakerui' : '');
 
-
+ini_set('display_errors', APP_ENV == 'dev' ? 'on' : 'off');
 
 ///////////////////////////////////////////////////////////////////////////////////
 
