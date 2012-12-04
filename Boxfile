@@ -7,3 +7,6 @@ web1:
   document_root: www
   php_extensions:
     - intl
+  after_build:
+    - "curl -s https://getcomposer.org/installer | php"
+    - "php composer.phar install"
